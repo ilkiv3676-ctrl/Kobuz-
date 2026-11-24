@@ -1,0 +1,12 @@
+const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
+const f=fs.readdirSync(__dirname).find(x=>x.toLowerCase().endsWith('.html'));
+const page=fs.readFileSync(path.join(__dirname,f));
+const srv=http.createServer((q,r)=>{r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(page)});
+const wss=new WebSocketServer({server:srv}),S=new Map();let n=0;
+wss.on('connection',ws=>{const id='p'+(++n);ws.id=id;
+for(const [k,p] of S)ws.send(JSON.stringify({t:'s',id:k,p}));
+ws.on('message',d=>{let p;try{p=JSON.parse(d)}catch(e){return}if(!p||typeof p.x!=='number')return;
+p={x:+p.x,z:+p.z,y:+p.y||0,yaw:+p.yaw||0,car:p.car?1:0,t:p.t|0,n:String(p.n||'Игрок').slice(0,14)};S.set(id,p);
+const m=JSON.stringify({t:'s',id,p});for(const c of wss.clients)if(c!==ws&&c.readyState===1)c.send(m)});
+ws.on('close',()=>{S.delete(id);const m=JSON.stringify({t:'l',id});for(const c of wss.clients)if(c.readyState===1)c.send(m)})});
+srv.listen(process.env.PORT||3000,()=>console.log('KOBUZ online on',process.env.PORT||3000));
