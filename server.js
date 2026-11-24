@@ -1,6 +1,6 @@
 const http=require('http'),fs=require('fs'),path=require('path'),{WebSocketServer}=require('ws');
 const f=fs.readdirSync(__dirname).find(x=>x.toLowerCase().endsWith('.html'));
-srv.removeAllListeners('request');srv.on('request',(q,r)=>{r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(fs.readFileSync(path.join(__dirname,f),'utf8').split('hudOff&&hudOff()').join('0'))}); const page=fs.readFileSync(path.join(__dirname,f));
+const page=fs.readFileSync(path.join(__dirname,f),'utf8').split('hudOff&&hudOff()').join('0');
 const srv=http.createServer((q,r)=>{r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(page)});
 const wss=new WebSocketServer({server:srv}),S=new Map();let n=0;
 wss.on('connection',ws=>{const id='p'+(++n);ws.id=id;
